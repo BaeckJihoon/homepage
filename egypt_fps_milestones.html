@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>이집트 신화 5대5 FPS · 마일스톤</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#F5F5F2;color:#1B1D21;font-family:'IBM Plex Sans KR',system-ui,sans-serif;font-size:15px;line-height:1.5;font-variant-numeric:tabular-nums}
+  button,input{font-family:inherit}
+  button{cursor:pointer}
+  .wrap{max-width:1160px;margin:0 auto;padding:40px 24px 64px;display:flex;flex-direction:column;gap:24px}
+  .card{background:#fff;border:1px solid #E3E3DE;border-radius:14px}
+  .muted{color:#5B616B}
+  h1{margin:0;font-size:32px;line-height:1.2;font-weight:700;letter-spacing:-.02em}
+  h2{margin:0;font-size:17px;font-weight:600}
+  h3{margin:0;font-size:17px;font-weight:600}
+  header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px}
+  .btn{min-height:44px;padding:0 18px;border-radius:10px;font-size:15px;font-weight:600;display:inline-flex;align-items:center;gap:8px}
+  .btn-dark{border:0;background:#1B1D21;color:#fff}
+  .btn-blue{border:0;background:#2F5BEA;color:#fff}
+  .btn-line{border:1px solid #CFCFC8;background:#fff;color:#1B1D21;font-weight:500}
+  .form{padding:20px 24px;display:flex;flex-direction:column;gap:16px}
+  .fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+  label.f{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3F444C}
+  label.f input{min-height:44px;padding:0 12px;border:1px solid #CFCFC8;border-radius:8px;font-size:15px;color:#1B1D21;background:#fff}
+  .err{margin:0;font-size:14px;color:#9A3412}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+  .stat{padding:20px;display:flex;flex-direction:column;gap:10px}
+  .stat .k{font-size:13px;font-weight:500;color:#5B616B}
+  .stat .v{font-size:34px;font-weight:700;line-height:1}
+  .stat .s{font-size:13px;color:#5B616B}
+  .track{height:8px;border-radius:99px;background:#ECECE7;overflow:hidden}
+  .track>div{height:100%;border-radius:99px}
+  .tl{padding:20px 24px 12px;display:flex;flex-direction:column;gap:12px}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:#3F444C}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .dia{width:10px;height:10px;transform:rotate(45deg);border-radius:2px;display:inline-block}
+  .scroll{overflow-x:auto}
+  .row{display:grid;grid-template-columns:220px minmax(0,1fr);border-bottom:1px solid #F0F0EC}
+  .row.head{border-bottom:1px solid #ECECE7}
+  .rname{display:flex;flex-direction:column;justify-content:center;padding:8px 12px 8px 0;min-width:0}
+  .rname b{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rname small{font-size:12px;color:#5B616B}
+  .lane{position:relative;height:52px}
+  .head .lane{height:32px}
+  .mo{position:absolute;top:0;bottom:0;padding-left:6px;border-left:1px solid #E3E3DE;font-size:12px;font-weight:500;color:#5B616B;line-height:32px;white-space:nowrap}
+  .today{position:absolute;top:0;bottom:0;width:2px;background:#C2410C}
+  .bar{position:absolute;top:22px;height:8px;border-radius:99px}
+  .gem{position:absolute;top:19px;width:14px;height:14px;border-radius:3px;transform:rotate(45deg)}
+  .listhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px}
+  .pills{display:flex;flex-wrap:wrap;gap:8px}
+  .pill{min-height:44px;padding:0 14px;border-radius:99px;font-size:14px;font-weight:500;display:inline-flex;align-items:center;gap:6px;background:#fff;color:#1B1D21;border:1px solid #CFCFC8}
+  .pill[aria-pressed="true"]{background:#1B1D21;color:#fff;border-color:#1B1D21}
+  .pill small{font-size:12px;opacity:.8}
+  .list{display:flex;flex-direction:column;gap:14px}
+  .ms{padding:18px 20px;display:flex;flex-direction:column;gap:14px}
+  .top{display:flex;align-items:flex-start;gap:12px}
+  .top .main{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:6px}
+  .ttl{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+  .badge{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:99px;font-size:12px;font-weight:600}
+  .meta{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:#5B616B}
+  .del{flex:none;width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:10px;background:transparent;color:#6B7079}
+  .del:hover{background:#F0F0EC}
+  .prog{display:flex;align-items:center;gap:12px}
+  .prog .track{flex:1 1 auto;height:6px}
+  .prog span{flex:none;font-size:13px;color:#3F444C;min-width:88px;text-align:right}
+  .tog{align-self:flex-start;min-height:44px;padding:0 12px 0 0;border:0;background:transparent;color:#2F5BEA;font-size:14px;font-weight:500;display:inline-flex;align-items:center;gap:6px}
+  .tog svg{transition:transform .15s}
+  .tog[aria-expanded="true"] svg{transform:rotate(180deg)}
+  .tasks{border-top:1px solid #F0F0EC;padding-top:4px;display:flex;flex-direction:column}
+  .tasks label{display:flex;align-items:center;gap:12px;min-height:44px;font-size:14px;cursor:pointer}
+  .tasks input{width:18px;height:18px;accent-color:#2F5BEA;margin:0}
+  .tasks .done{text-decoration:line-through;color:#6B7079}
+  .empty{padding:32px;text-align:center;color:#5B616B;font-size:14px;border:1px dashed #CFCFC8;background:#fff;border-radius:14px}
+  [hidden]{display:none !important}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+      <span class="muted" style="font-size:13px;font-weight:500">프로젝트 / 마일스톤</span>
+      <h1>이집트 신화 5대5 FPS (가제)</h1>
+      <span class="muted" style="font-size:14px">PC · Unity 6.3 · Netcode for GameObjects · 2026.09.01 – 2027.04.30 · 다음 마일스톤: <strong id="next" style="color:#1B1D21;font-weight:600"></strong></span>
+    </div>
+    <button type="button" class="btn btn-dark" id="openForm">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>
+      마일스톤 추가
+    </button>
+  </header>
+
+  <section class="card form" id="form" aria-label="새 마일스톤" hidden>
+    <h2>새 마일스톤</h2>
+    <div class="fgrid">
+      <label class="f">마일스톤 이름<input type="text" id="fTitle" placeholder="예: 영웅 3차 (토트 · 콘수)"></label>
+      <label class="f">분야<input type="text" id="fOwner" placeholder="예: 영웅 · 네트워크"></label>
+      <label class="f">마감일<input type="date" id="fDue"></label>
+    </div>
+    <label class="f">세부 작업 (쉼표로 구분)<input type="text" id="fTasks" placeholder="예: 스킬 설계, 구현, 2인 테스트"></label>
+    <p class="err" id="fErr" role="alert" hidden></p>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end">
+      <button type="button" class="btn btn-line" id="cancel">취소</button>
+      <button type="button" class="btn btn-blue" id="add">추가하기</button>
+    </div>
+  </section>
+
+  <section class="stats" aria-label="요약">
+    <div class="card stat">
+      <span class="k">전체 진행률</span>
+      <span class="v"><span id="overall">0</span>%</span>
+      <div class="track"><div id="overallBar" style="background:#1B1D21;width:0"></div></div>
+      <span class="s">작업 <span id="allDone">0</span> / <span id="allTasks">0</span>개 완료</span>
+    </div>
+    <div class="card stat">
+      <span class="k">완료</span>
+      <span class="v" style="color:#0B5F58" id="cDone">0</span>
+      <span class="s">전체 마일스톤 <span id="cTotal">0</span>개 중</span>
+    </div>
+    <div class="card stat">
+      <span class="k">진행 중 · 예정</span>
+      <span class="v" style="color:#1E40AF"><span id="cActive">0</span> <span style="font-size:20px;color:#8A9099;font-weight:600">/ <span id="cTodo">0</span></span></span>
+      <span class="s">진행 중 <span id="cActive2">0</span>개, 예정 <span id="cTodo2">0</span>개</span>
+    </div>
+    <div class="card stat">
+      <span class="k">지연</span>
+      <span class="v" style="color:#9A3412" id="cLate">0</span>
+      <span class="s">마감일이 지난 미완료 항목</span>
+    </div>
+  </section>
+
+  <section class="card tl" aria-label="타임라인">
+    <div class="listhead">
+      <h2>타임라인</h2>
+      <div class="legend">
+        <span><i class="dia" style="background:#0F766E"></i>완료</span>
+        <span><i class="dia" style="background:#2F5BEA"></i>진행 중</span>
+        <span><i class="dia" style="background:#fff;border:2px solid #8A9099;box-sizing:border-box"></i>예정</span>
+        <span><i class="dia" style="background:#C2410C"></i>지연</span>
+        <span><i style="width:2px;height:14px;background:#C2410C;display:inline-block"></i>오늘</span>
+      </div>
+    </div>
+    <div class="scroll"><div style="min-width:760px" id="timeline"></div></div>
+  </section>
+
+  <section aria-label="마일스톤 목록" style="display:flex;flex-direction:column;gap:14px">
+    <div class="listhead">
+      <h2>마일스톤</h2>
+      <div class="pills" role="group" aria-label="상태 필터" id="filters"></div>
+    </div>
+    <div class="empty" id="empty" hidden>이 상태의 마일스톤이 없습니다.</div>
+    <div class="list" id="list"></div>
+  </section>
+
+</div>
+
+<script>
+(function () {
+  const t = (label, done) => ({ label, done });
+  const state = {
+    projectStart: '2026-09-01',
+    filter: 'all',
+    open: { m4: true },
+    nextId: 9,
+    milestones: [
+      { id: 'm1', title: '네트워크 · 기본 시스템', owner: '네트워크', due: '2026-10-10', tasks: [t('이동 · 시점 동기화 (ClientNetworkTransform)', true), t('체력 · 팀 · 점수 서버 동기화', true), t('히트스캔 · 투사체 서버 판정', true), t('팀 데스매치 (MatchManager)', true), t('자동 부활 6초', true)] },
+      { id: 'm2', title: '전투 공통 시스템', owner: '전투', due: '2026-10-31', tasks: [t('HeroBase 공통 틀 · PlayerHero', true), t('상태이상 (화상 · 독 · 매혹 · 속박 등)', true), t('공통 투사체 · 팀 방벽', true), t('궁극기 게이지', true), t('F 변신 (라 → 아툼 → 케프리 → 라)', true)] },
+      { id: 'm3', title: '영웅 1차: 태양신 4인', owner: '영웅', due: '2026-11-15', tasks: [t('호루스 (탱커)', true), t('라 (딜러)', true), t('케프리 (힐러)', true), t('아툼 (탱커)', true)] },
+      { id: 'm4', title: '영웅 2차 · 상태이상 추가', owner: '영웅', due: '2026-12-20', tasks: [t('슈', false), t('테프누트', false), t('게브', false), t('토트 · 콘수 · 아누비스 설계', false), t('출혈 · 수면 상태이상', false), t('팀 바꾸기 테스트 키', false)] },
+      { id: 'm5', title: '온라인 게임 흐름', owner: '네트워크', due: '2027-01-31', tasks: [t('영웅 선택 화면', false), t('로비', false), t('매칭', false), t('Relay 온라인 접속', false)] },
+      { id: 'm6', title: '게임 모드 추가', owner: '게임 모드', due: '2027-02-28', tasks: [t('거점 모드', false), t('화물 모드', false)] },
+      { id: 'm7', title: '아트 · 사운드 정식화', owner: '아트 · 사운드', due: '2027-03-31', tasks: [t('캐릭터 모델 · 애니메이션', false), t('파티클 이펙트 (임시 큐브 교체)', false), t('사운드', false), t('정식 UI (OnGUI 교체)', false)] },
+      { id: 'm8', title: '출시 준비', owner: 'QA', due: '2027-04-30', tasks: [t('핵 방어 강화', false), t('테스트용 코드 정리 (StatusDebug · F1~F4)', false), t('외부 플레이테스트', false)] }
+    ]
+  };
+
+  // 저장: 브라우저에 진행 상황을 기억 (새로고침해도 유지)
+  const KEY = 'egypt-fps-milestones-v1';
+  try {
+    const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (saved && Array.isArray(saved.milestones)) Object.assign(state, saved);
+  } catch (e) {}
+  const save = () => {
+    try { localStorage.setItem(KEY, JSON.stringify({ milestones: state.milestones, open: state.open, nextId: state.nextId })); } catch (e) {}
+  };
+
+  const META = {
+    done:   { label: '완료',   color: '#0F766E', tint: '#E3F2EF', ink: '#0B5F58' },
+    active: { label: '진행 중', color: '#2F5BEA', tint: '#E8EEFD', ink: '#1E40AF' },
+    todo:   { label: '예정',   color: '#8A9099', tint: '#EEF0F2', ink: '#4B5563' },
+    late:   { label: '지연',   color: '#C2410C', tint: '#FCEBE1', ink: '#9A3412' }
+  };
+  const DAY = 86400000;
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const day = (s) => { const p = String(s).split('-').map(Number); return new Date(p[0], p[1] - 1, p[2]); };
+  const z = (n) => String(n).padStart(2, '0');
+  const fmt = (d) => d.getFullYear() + '.' + z(d.getMonth() + 1) + '.' + z(d.getDate()) + ' (' + '일월화수목금토'[d.getDay()] + ')';
+
+  function render() {
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const sorted = state.milestones.slice().sort((a, b) => (a.due < b.due ? -1 : a.due > b.due ? 1 : 0));
+    const kick = day(state.projectStart);
+    const dues = sorted.map((m) => day(m.due));
+    const all = [kick, today].concat(dues);
+    const min = new Date(Math.min.apply(null, all));
+    const max = new Date(Math.max.apply(null, all));
+    const tStart = new Date(min.getFullYear(), min.getMonth(), 1);
+    const tEnd = new Date(max.getFullYear(), max.getMonth() + 1, 1);
+    const P = (d) => ((d - tStart) / (tEnd - tStart)) * 100;
+
+    let allTasks = 0, allDone = 0, next = null;
+    const counts = { done: 0, active: 0, todo: 0, late: 0 };
+
+    const items = sorted.map((m, i) => {
+      const due = dues[i];
+      const prev = i === 0 ? kick : dues[i - 1];
+      const total = m.tasks.length;
+      const done = m.tasks.filter((x) => x.done).length;
+      allTasks += total; allDone += done;
+      const st = total > 0 && done === total ? 'done' : due < today ? 'late' : done > 0 ? 'active' : 'todo';
+      counts[st]++;
+      const diff = Math.round((due - today) / DAY);
+      const dday = st === 'done' ? '완료됨' : diff < 0 ? Math.abs(diff) + '일 지연' : diff === 0 ? 'D-Day' : 'D-' + diff;
+      if (!next && st !== 'done' && diff >= 0) next = m.title + ' · ' + dday;
+      return { m, due, a: P(prev), b: P(due), total, done, st, meta: META[st], dday, pct: total ? Math.round(done / total * 100) : 0 };
+    });
+
+    // 요약
+    const overall = allTasks ? Math.round(allDone / allTasks * 100) : 0;
+    $('next').textContent = next || '없음';
+    $('overall').textContent = overall;
+    $('overallBar').style.width = overall + '%';
+    $('allDone').textContent = allDone;
+    $('allTasks').textContent = allTasks;
+    $('cDone').textContent = counts.done;
+    $('cTotal').textContent = items.length;
+    $('cActive').textContent = $('cActive2').textContent = counts.active;
+    $('cTodo').textContent = $('cTodo2').textContent = counts.todo;
+    $('cLate').textContent = counts.late;
+
+    // 타임라인
+    const todayLeft = 'left:calc(' + P(today).toFixed(2) + '% - 1px)';
+    let months = '';
+    for (let d = new Date(tStart); d < tEnd; d = new Date(d.getFullYear(), d.getMonth() + 1, 1)) {
+      const yr = d.getTime() === tStart.getTime() || d.getMonth() === 0 ? String(d.getFullYear()).slice(2) + '년 ' : '';
+      months += '<span class="mo" style="left:' + P(d).toFixed(2) + '%">' + yr + (d.getMonth() + 1) + '월</span>';
+    }
+    let tl = '<div class="row head"><div></div><div class="lane">' + months + '<span class="today" style="' + todayLeft + '"></span></div></div>';
+    items.forEach((r) => {
+      const fill = r.st === 'todo' ? 'background:#fff;border:2px solid ' + r.meta.color : 'background:' + r.meta.color;
+      tl += '<div class="row"><div class="rname"><b>' + esc(r.m.title) + '</b><small>' + z(r.due.getMonth() + 1) + '.' + z(r.due.getDate()) + ' · ' + r.meta.label + '</small></div>' +
+        '<div class="lane">' +
+        '<span class="bar" style="left:' + r.a.toFixed(2) + '%;width:' + Math.max(r.b - r.a, 0.4).toFixed(2) + '%;background:' + r.meta.tint + '"></span>' +
+        '<span class="gem" style="left:calc(' + r.b.toFixed(2) + '% - 7px);' + fill + '"></span>' +
+        '<span class="today" style="' + todayLeft + '"></span></div></div>';
+    });
+    $('timeline').innerHTML = tl;
+
+    // 필터
+    const FL = [['all', '전체', items.length], ['active', '진행 중', counts.active], ['late', '지연', counts.late], ['todo', '예정', counts.todo], ['done', '완료', counts.done]];
+    $('filters').innerHTML = FL.map((f) =>
+      '<button type="button" class="pill" data-filter="' + f[0] + '" aria-pressed="' + (state.filter === f[0]) + '">' + f[1] + ' <small>' + f[2] + '</small></button>'
+    ).join('');
+
+    // 목록
+    const visible = items.filter((r) => state.filter === 'all' || r.st === state.filter);
+    $('empty').hidden = visible.length > 0;
+    $('list').innerHTML = visible.map((r) => {
+      const m = r.m, open = !!state.open[m.id];
+      const tasks = m.tasks.length === 0
+        ? '<p class="muted" style="margin:8px 0;font-size:14px">등록된 세부 작업이 없습니다.</p>'
+        : m.tasks.map((x, j) =>
+            '<label><input type="checkbox" data-task="' + m.id + ':' + j + '"' + (x.done ? ' checked' : '') + '><span class="' + (x.done ? 'done' : '') + '">' + esc(x.label) + '</span></label>'
+          ).join('');
+      return '<article class="card ms">' +
+        '<div class="top"><div class="main">' +
+          '<div class="ttl"><span class="badge" style="background:' + r.meta.tint + ';color:' + r.meta.ink + '">' + r.meta.label + '</span><h3>' + esc(m.title) + '</h3></div>' +
+          '<div class="meta"><span>분야 ' + esc(m.owner) + '</span><span>마감 ' + fmt(r.due) + '</span><span style="font-weight:600;color:' + r.meta.ink + '">' + r.dday + '</span></div>' +
+        '</div>' +
+        '<button type="button" class="del" data-del="' + m.id + '" aria-label="' + esc(m.title) + ' 삭제">' +
+          '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h12M7 5V3.5h4V5M5 5l.7 9.5h6.6L13 5"/></svg>' +
+        '</button></div>' +
+        '<div class="prog"><div class="track"><div style="width:' + r.pct + '%;background:' + r.meta.color + '"></div></div><span>' + r.done + ' / ' + r.total + ' 작업 · ' + r.pct + '%</span></div>' +
+        '<button type="button" class="tog" data-toggle="' + m.id + '" aria-expanded="' + open + '">' + (open ? '세부 작업 접기' : '세부 작업 보기') +
+          '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5l4 4 4-4"/></svg></button>' +
+        (open ? '<div class="tasks">' + tasks + '</div>' : '') +
+      '</article>';
+    }).join('');
+  }
+
+  // 이벤트
+  $('filters').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-filter]'); if (!b) return;
+    state.filter = b.dataset.filter; render();
+  });
+  $('list').addEventListener('click', (e) => {
+    const tg = e.target.closest('[data-toggle]');
+    if (tg) { state.open[tg.dataset.toggle] = !state.open[tg.dataset.toggle]; save(); render(); return; }
+    const del = e.target.closest('[data-del]');
+    if (del) {
+      const m = state.milestones.find((x) => x.id === del.dataset.del);
+      if (m && confirm('"' + m.title + '" 마일스톤을 삭제할까요?')) {
+        state.milestones = state.milestones.filter((x) => x.id !== m.id); save(); render();
+      }
+    }
+  });
+  $('list').addEventListener('change', (e) => {
+    const cb = e.target.closest('[data-task]'); if (!cb) return;
+    const [id, j] = cb.dataset.task.split(':');
+    const m = state.milestones.find((x) => x.id === id);
+    if (m) { m.tasks[+j].done = cb.checked; save(); render(); }
+  });
+
+  const form = $('form'), err = $('fErr');
+  const resetForm = () => { ['fTitle', 'fOwner', 'fDue', 'fTasks'].forEach((id) => { $(id).value = ''; }); err.hidden = true; };
+  $('openForm').addEventListener('click', () => { form.hidden = false; $('fTitle').focus(); });
+  $('cancel').addEventListener('click', () => { form.hidden = true; resetForm(); });
+  $('add').addEventListener('click', () => {
+    const title = $('fTitle').value.trim(), due = $('fDue').value;
+    if (!title || !due) { err.textContent = '마일스톤 이름과 마감일을 입력해 주세요.'; err.hidden = false; return; }
+    const tasks = $('fTasks').value.split(',').map((s) => s.trim()).filter(Boolean).map((s) => ({ label: s, done: false }));
+    const id = 'm' + state.nextId++;
+    state.milestones.push({ id, title, owner: $('fOwner').value.trim() || '분야 미정', due, tasks });
+    state.open[id] = tasks.length > 0;
+    state.filter = 'all';
+    form.hidden = true; resetForm(); save(); render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
